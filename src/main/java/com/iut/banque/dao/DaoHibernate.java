@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iut.banque.exceptions.IllegalFormatException;
@@ -33,6 +34,9 @@ import com.iut.banque.modele.Utilisateur;
 public class DaoHibernate implements IDao {
 
 	private SessionFactory sessionFactory;
+
+	// Create an instance of BCryptPasswordEncoder
+	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	public DaoHibernate() {
 		System.out.println("==================");
@@ -203,7 +207,7 @@ public class DaoHibernate implements IDao {
 				if (user == null) {
 					return false;
 				}
-				return (userPwd.equals(user.getUserPwd()));
+				return passwordEncoder.matches(userPwd, user.getUserPwd());
 			}
 		}
 	}
@@ -255,5 +259,4 @@ public class DaoHibernate implements IDao {
 	public void disconnect() {
 		System.out.println("Déconnexion de la DAO.");
 	}
-
 }
