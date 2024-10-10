@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iut.banque.exceptions.IllegalFormatException;
@@ -34,9 +34,6 @@ import com.iut.banque.modele.Utilisateur;
 public class DaoHibernate implements IDao {
 
 	private SessionFactory sessionFactory;
-
-	// Create an instance of BCryptPasswordEncoder
-	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	public DaoHibernate() {
 		System.out.println("==================");
@@ -151,16 +148,15 @@ public class DaoHibernate implements IDao {
 			String userPwd, boolean manager, String numClient)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
 		Session session = sessionFactory.getCurrentSession();
-
 		Utilisateur user = session.get(Utilisateur.class, userId);
 		if (user != null) {
-			throw new TechnicalException("User Id déjà utilisé.");
+			throw new TechnicalException("Un utilisateur avec cet id existe déjà.");
 		}
-
+		String hashedPassword = BCrypt.hashpw(userPwd, BCrypt.gensalt());
 		if (manager) {
-			user = new Gestionnaire(nom, prenom, adresse, male, userId, userPwd);
+			user = new Gestionnaire(nom, prenom, adresse, male, userId, hashedPassword);
 		} else {
-			user = new Client(nom, prenom, adresse, male, userId, userPwd, numClient);
+			user = new Client(nom, prenom, adresse, male, userId, hashedPassword, numClient);
 		}
 		session.save(user);
 
@@ -196,20 +192,18 @@ public class DaoHibernate implements IDao {
 		Session session = null;
 		if (userId == null || userPwd == null) {
 			return false;
-		} else {
+		}
 			session = sessionFactory.openSession();
 			userId = userId.trim();
 			if ("".equals(userId) || "".equals(userPwd)) {
 				return false;
-			} else {
-				session = sessionFactory.getCurrentSession();
-				Utilisateur user = session.get(Utilisateur.class, userId);
-				if (user == null) {
-					return false;
-				}
-				return passwordEncoder.matches(userPwd, user.getUserPwd());
+			} 
+			session = sessionFactory.getCurrentSession();
+			Utilisateur user = session.get(Utilisateur.class, userId);
+			if (user == null) {
+				return false;
 			}
-		}
+			return BCrypt.checkpw(userPwd, user.getUserPwd());
 	}
 
 	/**
