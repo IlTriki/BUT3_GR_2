@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `Utilisateur` (
   `nom` varchar(45) NOT NULL,
   `prenom` varchar(45) NOT NULL,
   `adresse` varchar(100) NOT NULL,
-  `userPwd` varchar(45) DEFAULT NULL,
+  `userPwd` varchar(255) DEFAULT NULL,
   `male` bit(1) NOT NULL,
   `type` varchar(10) NOT NULL,
   `numClient` varchar(45) DEFAULT NULL,
@@ -73,15 +73,15 @@ CREATE TABLE IF NOT EXISTS `Utilisateur` (
 --
 
 INSERT INTO `Utilisateur` (`userId`, `nom`, `prenom`, `adresse`, `userPwd`, `male`, `type`, `numClient`) VALUES
-('a.lidell1', 'Lidell', 'Alice', '789, grande rue, Metz', 'toto', b'1', 'CLIENT', '9865432100'),
-('admin', 'Smith', 'Joe', '123, grande rue, Metz', 'adminpass', b'1', 'MANAGER', ''),
-('c.exist', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', 'TEST PASS', b'1', 'CLIENT', '0101010101'),
-('g.descomptes', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', 'TEST PASS', b'1', 'CLIENT', '1000000001'),
-('g.descomptesvides', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', 'TEST PASS', b'1', 'CLIENT', '0000000002'),
-('g.exist', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', 'TEST PASS', b'1', 'CLIENT', '1010101010'),
-('g.pasdecompte', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', 'TEST PASS', b'1', 'CLIENT', '5544554455'),
-('j.doe1', 'Doe', 'Jane', '456, grand boulevard, Brest', 'toto', b'1', 'CLIENT', '1234567890'),
-('j.doe2', 'Doe', 'John', '457, grand boulevard, Perpignan', 'toto', b'1', 'CLIENT', '0000000001');
+('a.lidell1', 'Lidell', 'Alice', '789, grande rue, Metz', '$2y$10$b28n.N8fPBiltP7zK5CPnui6GrH0z3yrpOV32814IVnuKwQ4e4jwu', b'1', 'CLIENT', '9865432100'),
+('admin', 'Smith', 'Joe', '123, grande rue, Metz', '$2y$10$csgy2qCa.b8eJJU1PU5MQOA9i0k4VuNwMfZrWDLaN/9pZJ6zkg7Yu', b'1', 'MANAGER', ''),
+('c.exist', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', '$2y$10$tKvsu28uUceGrSVjRq0y2OHQxCbinw33nubCvhuwoQFq.klf55sjm', b'1', 'CLIENT', '0101010101'),
+('g.descomptes', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', '$2y$10$Ys5YBenpEZ3S.TAnjZoGne3Y9.AGACjF5eyIMdRnHeGOOVTanLzae', b'1', 'CLIENT', '1000000001'),
+('g.descomptesvides', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', '$2y$10$Sl1bdWg6S7ZfPmPdtxfejeex2UE/pP999t4DRdU5MhI3pERz8iI.2', b'1', 'CLIENT', '0000000002'),
+('g.exist', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', '$2y$10$/NNbDDU0KuYc3v7sdjax4OFgscFXm47aFIvzgytai.BX44ybnKK8O', b'1', 'CLIENT', '1010101010'),
+('g.pasdecompte', 'TEST NOM', 'TEST PRENOM', 'TEST ADRESSE', '$2y$10$gF.YdiEzpnp/d6COKrQtIeU1GDqm4ffOlzUMhIc0XaB/DFYxe39eu', b'1', 'CLIENT', '5544554455'),
+('j.doe1', 'Doe', 'Jane', '456, grand boulevard, Brest', '$2y$10$Rg6UorZnqDda.wTmY4kqLO.253ka18j2ATqIFtRpWhwFD5cKz.ecu', b'1', 'CLIENT', '1234567890'),
+('j.doe2', 'Doe', 'John', '457, grand boulevard, Perpignan', '$2y$10$j9ZviSA.U9NL26JCo/mqX.d8epMDHaWot30.FTwle5NiLbKz1/Eey', b'1', 'CLIENT', '0000000001');
 
 --
 -- Constraints for dumped tables
