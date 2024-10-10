@@ -23,6 +23,9 @@ import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 import com.iut.banque.modele.Utilisateur;
+//import org.junit.Ignore;
+//
+//@Ignore
 
 /**
  * Class de test pour la DAO.
