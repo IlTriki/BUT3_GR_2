@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,9 @@ import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 import com.iut.banque.modele.Utilisateur;
-
+//import org.junit.Ignore;
+//
+//@Ignore
 /**
  * Class de test pour la DAO.
  * 
@@ -222,7 +225,7 @@ public class TestsDaoHibernate {
 			assertEquals("PRENOM", user.getPrenom());
 			assertEquals("ADRESSE", user.getAdresse());
 			assertEquals("c.new1", user.getUserId());
-			assertEquals("PASS", user.getUserPwd());
+			assertTrue(BCrypt.checkpw("PASS", user.getUserPwd()));
 			assertTrue(user.isMale());
 		} catch (TechnicalException he) {
 			fail("L'utilisateur aurait du être créé.");
