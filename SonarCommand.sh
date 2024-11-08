@@ -1,0 +1,1 @@
+mvn clean verify sonar:sonar \   -Dsonar.projectKey=GR3_QUALDEV \   -Dsonar.host.url=http://localhost:9000 \   -Dsonar.login=sqp_df94843957235bd085fb3a14bfb7e88c772b7bcd
