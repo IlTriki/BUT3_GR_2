@@ -24,31 +24,35 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<!-- La session factory. Utilise Hibernate. Il est possible d'utiliser <property 
-		name="annotatedClasses"> avec une liste de classes au lieu de <property name="packagesToScan" 
+	<!-- La session factory. Utilise Hibernate. Il est possible d'utiliser <property
+		name="annotatedClasses"> avec une liste de classes au lieu de <property name="packagesToScan"
 		value="com.iut.banque.modele" /> -->
 	<bean id="sessionFactory" scope="singleton"
-		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		  class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties">
 			<props>
+				<!-- Utilisation du dialecte MariaDB -->
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
-				<!-- <prop key="hibernate.default_schema">allard19u_coa_banque</prop> -->
+				<!-- Configuration optionnelle pour le schéma -->
+				<!-- <prop key="hibernate.default_schema">your_schema_name</prop> -->
 			</props>
 		</property>
 		<property name="packagesToScan" value="com.iut.banque.modele" />
 	</bean>
 
+
 	<!-- La source de donnée utilisée en production. Contient les infos de base 
 		de la connection -->
 	<bean id="dataSource" scope="singleton"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-			value="com.mysql.jdbc.Driver" />
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<!-- Utilisation du driver MariaDB -->
+		<property name="driverClassName" value="org.mariadb.jdbc.Driver" />
 
-		<property name="url" value="jdbc:mysql://localhost:3306/qualdev2024?useSSL=false" />
-			<property name="username" value="root" />
-			<property name="password"  value="" />
+		<!-- URL de connexion à la base de données -->
+		<property name="url" value="jdbc:mariadb://localhost:3306/bdd_joyeux?useSSL=false" />
+		<property name="username" value="root" />
+		<property name="password" value="r" />
 	</bean>
 
 	<!-- ============= Gestion des Transactions ============= -->
