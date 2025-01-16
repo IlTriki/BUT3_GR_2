@@ -13,34 +13,38 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
-      
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+          docker compose version
       - name: Start Docker Compose services
-        run: docker-compose up -d
-      
+        run: docker compose up -d
       - name: Wait for database to be ready
         run: |
-          timeout 30s bash -c 'until docker-compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
-      
+          timeout 30s bash -c 'until docker compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
+      - name: Verify database initialization
+        run: |
+          docker compose exec -T db mysql -uroot -proot -e "SHOW DATABASES;"
+          docker compose exec -T db mysql -uroot -proot qualdev2024 -e "SHOW TABLES;"
+          docker compose exec -T db mysql -uroot -proot bankiuttest -e "SHOW TABLES;"
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,7 +57,6 @@ jobs:
           -Dspring.datasource.url=jdbc:mariadb://localhost:3306/qualdev2024 \
           -Dspring.datasource.username=root \
           -Dspring.datasource.password=root
-      
       - name: Stop Docker Compose services
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
