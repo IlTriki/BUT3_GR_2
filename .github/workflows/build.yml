@@ -74,14 +74,14 @@ jobs:
       # Importer projet_devops.sql
       - name: Import bankiut.sql
         run: |
-          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiut.sql | mysql -u root -proot Bankiut"
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiut.sql | mysql -u root -pr Bankiut"
 
       # Copier et importer projet_devops_test.sql
       - name: Copy bankiuttest.sql
         run: |
           docker cp "$GITHUB_WORKSPACE/script/bankiuttest.sql" $(docker ps -q --filter "ancestor=mariadb:10.4.1"):/tmp/bankiuttest.sql
           docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") ls /tmp/bankiuttest.sql || echo "File not found in container!"
-          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiuttest.sql | mysql -u root -proot Bankiut_test"
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiuttest.sql | mysql -u root -pr Bankiut_test"
 
       ##### revoir cette partie pour config en focntion de votre sonarcloud
       - name: execute
