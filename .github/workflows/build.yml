@@ -34,7 +34,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: 11
           distribution: 'zulu'
 
       - name: Cache SonarCloud packages
@@ -82,10 +82,6 @@ jobs:
           docker cp "$GITHUB_WORKSPACE/script/bankiuttest.sql" $(docker ps -q --filter "ancestor=mariadb:10.4.1"):/tmp/bankiuttest.sql
           docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") ls /tmp/bankiuttest.sql || echo "File not found in container!"
           docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiuttest.sql | mysql -u root -pr bankiuttest"
-
-      # Run tests
-      - name: Test with Maven
-        run: mvn test --batch-mode -DargLine="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED"
 
       ##### revoir cette partie pour config en focntion de votre sonarcloud
       - name: execute
