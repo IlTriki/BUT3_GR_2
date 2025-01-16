@@ -33,18 +33,19 @@ jobs:
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
-          docker compose version
+          sudo apt-get install -y docker.io docker-compose
+          docker --version
+          docker-compose --version
       - name: Start Docker Compose services
-        run: docker compose up -d
+        run: docker-compose up -d
       - name: Wait for database to be ready
         run: |
-          timeout 30s bash -c 'until docker compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
+          timeout 30s bash -c 'until docker-compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
       - name: Verify database initialization
         run: |
-          docker compose exec -T db mysql -uroot -proot -e "SHOW DATABASES;"
-          docker compose exec -T db mysql -uroot -proot qualdev2024 -e "SHOW TABLES;"
-          docker compose exec -T db mysql -uroot -proot bankiuttest -e "SHOW TABLES;"
+          docker-compose exec -T db mysql -uroot -proot -e "SHOW DATABASES;"
+          docker-compose exec -T db mysql -uroot -proot qualdev2024 -e "SHOW TABLES;"
+          docker-compose exec -T db mysql -uroot -proot bankiuttest -e "SHOW TABLES;"
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,4 +60,4 @@ jobs:
           -Dspring.datasource.password=root
       - name: Stop Docker Compose services
         if: always()
-        run: docker compose down -v
+        run: docker-compose down -v
