@@ -12,7 +12,7 @@ COPY src ./src
 
 COPY WebContent ./WebContent
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 FROM tomcat:9.0-jdk11-openjdk-slim
 

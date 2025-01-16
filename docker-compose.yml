@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://db:3306/qualdev2024
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    networks:
+      - bank-network
+
+  db:
+    image: mariadb:10.4
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=qualdev2024
+    volumes:
+      - ./script/dumpSQL.sql:/docker-entrypoint-initdb.d/01-main-database.sql
+      - ./script/dumpSQL_JUnitTest.sql:/docker-entrypoint-initdb.d/02-test-database.sql
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank-network
+
+volumes:
+  mariadb_data:
+
+networks:
+  bank-network:
+    driver: bridge 

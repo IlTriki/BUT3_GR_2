@@ -12,26 +12,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
-      - name: Cache SonarQube Cloud packages
+          distribution: 'zulu'
+      
+      - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      
+      - name: Start Docker Compose services
+        run: docker-compose up -d
+      
+      - name: Wait for database to be ready
+        run: |
+          timeout 30s bash -c 'until docker-compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
+      
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IlTriki_BUT3_GR_2 -DskipTests
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=IlTriki_BUT3_GR_2 \
+          -Dsonar.host.url=http://localhost:9000 \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dspring.datasource.url=jdbc:mariadb://localhost:3306/qualdev2024 \
+          -Dspring.datasource.username=root \
+          -Dspring.datasource.password=root
+      
+      - name: Stop Docker Compose services
+        if: always()
+        run: docker-compose down -v
