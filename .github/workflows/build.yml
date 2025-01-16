@@ -1,61 +1,92 @@
-name: SonarQube Cloud
+name: SonarCloud
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
-    name: Build and analyze
+    name: builder
     runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:10.4.1
+        env:
+          MYSQL_ROOT_PASSWORD: r
+          MYSQL_DATABASE: Bankiut
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up JDK 17
+
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 11
           distribution: 'zulu'
-      - name: Cache SonarQube packages
+
+      - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-      - name: Set up Docker Compose
-        uses: ndeloof/install-compose-action@v0.0.1
-      - name: Start Docker Compose services
-        run: docker-compose up -d
-      - name: Wait for database to be ready
+
+      # Attendre que MariaDB soit prêt
+      - name: Wait for MariaDB to be ready
         run: |
-          timeout 30s bash -c 'until docker-compose exec -T db mysqladmin ping -h localhost -u root -proot --silent; do sleep 1; done'
-      - name: Verify database initialization
+          until docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") mysqladmin --user=root --password=r --host=127.0.0.1 --port=3306 ping --silent; do
+            echo "Waiting for MariaDB to be ready..."
+            sleep 5
+          done
+
+      # Créer la base de données projet_devops
+      - name: Create databases
         run: |
-          docker-compose exec -T db mysql -uroot -proot -e "SHOW DATABASES;"
-          docker-compose exec -T db mysql -uroot -proot qualdev2024 -e "SHOW TABLES;"
-          docker-compose exec -T db mysql -uroot -proot bankiuttest -e "SHOW TABLES;"
-      - name: Build and analyze
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") mysql -u root -pr -e "CREATE DATABASE IF NOT EXISTS Bankiut;"
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") mysql -u root -pr -e "CREATE DATABASE IF NOT EXISTS Bankiut_test;"
+
+      # Copier et vérifier la présence de projet_devops.sql
+      - name: Copy bankiut.sql
+        run: |
+          docker cp "$GITHUB_WORKSPACE/script/bankiut.sql" $(docker ps -q --filter "ancestor=mariadb:10.4.1"):/tmp/bankiut.sql
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") ls /tmp/bankiut.sql || echo "File not found in container!"
+
+      # Importer projet_devops.sql
+      - name: Import bankiut.sql
+        run: |
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiut.sql | mysql -u root -proot Bankiut"
+
+      # Copier et importer projet_devops_test.sql
+      - name: Copy bankiuttest.sql
+        run: |
+          docker cp "$GITHUB_WORKSPACE/script/bankiuttest.sql" $(docker ps -q --filter "ancestor=mariadb:10.4.1"):/tmp/bankiuttest.sql
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") ls /tmp/bankiuttest.sql || echo "File not found in container!"
+          docker exec $(docker ps -q --filter "ancestor=mariadb:10.4.1") /bin/sh -c "cat /tmp/bankiuttest.sql | mysql -u root -proot Bankiut_test"
+
+      ##### revoir cette partie pour config en focntion de votre sonarcloud
+      - name: execute
+        working-directory: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=IlTriki_BUT3_GR_2 \
-          -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.login=$SONAR_TOKEN \
-          -Dspring.datasource.url=jdbc:mariadb://localhost:3306/qualdev2024 \
-          -Dspring.datasource.username=root \
-          -Dspring.datasource.password=root
-      - name: Stop Docker Compose services
-        if: always()
-        run: docker-compose down -v
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IlTriki_BUT3_GR_2
