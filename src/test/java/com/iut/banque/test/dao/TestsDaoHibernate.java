@@ -349,16 +349,15 @@ public class TestsDaoHibernate {
 		try {
 			Compte compte = daoHibernate.getAccountById("IO1010010001");
 			double ancienSolde = compte.getSolde();
-			double nouveauSolde = 1000.0;
-			compte.setSolde(nouveauSolde);
+			double montant = 1000.0;
 			
+			compte.crediter(montant);
 			daoHibernate.updateAccount(compte);
 			
 			Compte compteModifie = daoHibernate.getAccountById("IO1010010001");
-			assertEquals(nouveauSolde, compteModifie.getSolde(), 0.001);
+			assertEquals(ancienSolde + montant, compteModifie.getSolde(), 0.001);
 			
-			// Remettre l'ancien solde pour ne pas affecter les autres tests
-			compte.setSolde(ancienSolde);
+			compte.debiter(montant);
 			daoHibernate.updateAccount(compte);
 		} catch (Exception e) {
 			fail("L'update du compte aurait dû réussir : " + e.getMessage());
