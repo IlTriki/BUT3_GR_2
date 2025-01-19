@@ -133,7 +133,18 @@ public class ListeCompteManager extends ActionSupport {
 	 * @return String, le status de l'opération
 	 */
 	public String deleteUser() {
+		// BUG BLOQUANT : Si on supprime un client, sans vérifier le solde de ses comptes,
+		// on peut supprimer un client qui a un solde positif.
 		try {
+
+			//solution : vérifier le solde de ses comptes avant de supprimer le client
+
+			if (client instanceof Client) {
+				Map<String, Compte> comptesNonVides = ((Client)client).getComptesAvecSoldeNonNul();
+				if (!comptesNonVides.isEmpty()) {
+					return "NONEMPTYACCOUNT";
+				}
+			}
 			setUserInfo(client.getIdentity());
 			banque.deleteUser(client);
 			return "SUCCESS";
