@@ -18,6 +18,8 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.modele.Client;
 import com.iut.banque.modele.Compte;
+import com.iut.banque.modele.CompteAvecDecouvert;
+import com.iut.banque.modele.CompteSansDecouvert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/test/resources/TestsListeCompteManager-context.xml")
@@ -34,11 +36,18 @@ public class TestsListeCompteManager {
     }
 
     @Test
-    public void testGetComptes() throws IllegalFormatException, IllegalOperationException {
+    public void testGetComptesClient() throws IllegalFormatException, IllegalOperationException {
+        // Ajouter des comptes au client
+        client.addAccount(new CompteSansDecouvert("FR1234567890", 100, client));
+        client.addAccount(new CompteAvecDecouvert("FR1234567891", 200, 100, client));
+        
         listeCompteManager.setClient(client);
-        Map<String, Compte> comptes = listeCompteManager.getComptes();
+        Map<String, Compte> comptes = client.getComptes();
+        
         assertNotNull(comptes);
-        assertEquals(0, comptes.size());
+        assertEquals(2, comptes.size());
+        assertTrue(comptes.containsKey("FR1234567890"));
+        assertTrue(comptes.containsKey("FR1234567891"));
     }
 
     @Test
