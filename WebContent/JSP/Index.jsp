@@ -19,8 +19,10 @@
 <body>
 	<h1>Bienvenue sur l'application IUT Bank 2023</h1>
 	<p>
+		<!-- BUG NON-BLOQUANT : Le logo de l'IUT Metz n'est pas affiché -->
+		<!-- Solution : Changer le chemin de l'image -->
 		<img
-			src="https://www.iut-metz.univ-lorraine.fr/images/AdminSite/Logos/Logo_IUT_Metz.UL.small.png"
+			src="https://factuel.univ-lorraine.fr/sites/factuel.univ-lorraine.fr/files/field/image/2016/08/iut-metz_0.png"
 			alt="logo" />
 	</p>
 	<input type="button" value="Information" name="info"
