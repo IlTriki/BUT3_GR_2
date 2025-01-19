@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.iut.banque.modele.Client;
 import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
-import com.iut.banque.modele.IllegalFormatException;
-import com.iut.banque.modele.IllegalOperationException;
+import com.iut.banque.exceptions.IllegalFormatException;
+import com.iut.banque.exceptions.IllegalOperationException;
 
 public class TestsClient {
 
