@@ -344,6 +344,39 @@ public class TestsDaoHibernate {
 		assertEquals(false, daoHibernate.isUserAllowed("    ", "TEST PASS"));
 	}
 
+	@Test
+	public void testUpdateAccountSuccess() {
+		try {
+			Compte compte = daoHibernate.getAccountById("IO1010010001");
+			double ancienSolde = compte.getSolde();
+			double nouveauSolde = 1000.0;
+			compte.setSolde(nouveauSolde);
+			
+			daoHibernate.updateAccount(compte);
+			
+			Compte compteModifie = daoHibernate.getAccountById("IO1010010001");
+			assertEquals(nouveauSolde, compteModifie.getSolde(), 0.001);
+			
+			// Remettre l'ancien solde pour ne pas affecter les autres tests
+			compte.setSolde(ancienSolde);
+			daoHibernate.updateAccount(compte);
+		} catch (Exception e) {
+			fail("L'update du compte aurait dû réussir : " + e.getMessage());
+		}
+	}
+
+	@Test
+	public void testUpdateAccountWithNullAccount() {
+		try {
+			daoHibernate.updateAccount(null);
+			fail("Une exception aurait dû être levée avec un compte null");
+		} catch (IllegalArgumentException e) {
+			// Test réussi
+		} catch (Exception e) {
+			fail("Mauvais type d'exception : attendu IllegalArgumentException, reçu " + e.getClass().getSimpleName());
+		}
+	}
+
 	// TODO À implémenter lorsque disconnect() le sera
 	/*
 	 * @Test public void testDisconnect() { fail("Not yet implemented"); }
