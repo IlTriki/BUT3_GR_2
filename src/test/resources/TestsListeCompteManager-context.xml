@@ -1,19 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context.xsd
-    http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd">
-
-    <context:component-scan base-package="com.iut.banque" />
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+        "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+    <bean id="daoHibernate" class="com.iut.banque.dao.DaoHibernate" scope="singleton">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
@@ -31,12 +20,18 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/testbanque" />
-        <property name="username" value="test" />
-        <property name="password" value="test" />
+        <property name="url" value="jdbc:mariadb://localhost:3306/bankiuttest" />
+        <property name="username" value="root" />
+        <property name="password" value="r" />
     </bean>
 
-    <bean id="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager" />
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager">
+        <property name="dao" ref="daoHibernate" />
+    </bean>
 
     <bean id="client" class="com.iut.banque.modele.Client">
         <constructor-arg value="Test"/>
