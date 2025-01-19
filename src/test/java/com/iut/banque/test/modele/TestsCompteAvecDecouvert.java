@@ -21,6 +21,24 @@ public class TestsCompteAvecDecouvert {
 		compte = new CompteAvecDecouvert("FR0123456789", 100, 100, new Client());
 	}
 
+	@Test
+	public void testSetDecouvertAutoriseValeurPositive() throws IllegalFormatException, IllegalOperationException {
+		double nouveauDecouvert = 200.0;
+		compte.setDecouverAutorise(nouveauDecouvert);
+		assertEquals(nouveauDecouvert, compte.getDecouvertAutorise(), 0.001);
+	}
+
+	@Test(expected = IllegalFormatException.class)
+	public void testSetDecouvertAutoriseValeurNegative() throws IllegalFormatException, IllegalOperationException {
+		compte.setDecouverAutorise(-100.0);
+	}
+
+	@Test(expected = IllegalOperationException.class)
+	public void testSetDecouvertAutoriseMontantInferieurAuSoldeNegatif() throws IllegalFormatException, IllegalOperationException {
+		compte.debiter(150); // Solde devient -50
+		compte.setDecouverAutorise(40); // Devrait échouer car le solde est à -50
+}
+
 	/**
 	 * Test de la classe getClassName() pour les CompteAvecDecouvert
 	 */

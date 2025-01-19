@@ -1,12 +1,15 @@
 package com.iut.banque.test.modele;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
 import com.iut.banque.modele.Client;
 import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
+import com.iut.banque.modele.IllegalFormatException;
+import com.iut.banque.modele.IllegalOperationException;
 
 public class TestsClient {
 
@@ -255,6 +258,20 @@ public class TestsClient {
 		} catch (Exception e) {
 			fail("Exception récupérée -> " + e.getStackTrace().toString());
 		}
+	}
+
+	@Test
+	public void testPossedeComptesADecouvertSansComptes() throws IllegalFormatException {
+		Client client = new Client("Test", "User", "Address", true, "t.user1", "password", "1234567890");
+		assertFalse(client.possedeComptesADecouvert());
+	}
+
+	@Test
+	public void testPossedeComptesADecouvertAvecComptesPositifs() throws IllegalFormatException, IllegalOperationException {
+		Client client = new Client("Test", "User", "Address", true, "t.user1", "password", "1234567890");
+		client.addAccount(new CompteSansDecouvert("FR1234567890", 100, client));
+		client.addAccount(new CompteSansDecouvert("FR1234567891", 200, client));
+		assertFalse(client.possedeComptesADecouvert());
 	}
 
 }
