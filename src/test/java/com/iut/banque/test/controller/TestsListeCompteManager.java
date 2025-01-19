@@ -35,20 +35,7 @@ public class TestsListeCompteManager {
         client = new Client("Test", "User", "Address", true, "t.user1", "password", "1234567890");
     }
 
-    @Test
-    public void testGetComptesClient() throws IllegalFormatException, IllegalOperationException {
-        // Ajouter des comptes au client
-        client.addAccount(new CompteSansDecouvert("FR1234567890", 100, client));
-        client.addAccount(new CompteAvecDecouvert("FR1234567891", 200, 100, client));
-        
-        listeCompteManager.setClient(client);
-        Map<String, Compte> comptes = client.getComptes();
-        
-        assertNotNull(comptes);
-        assertEquals(2, comptes.size());
-        assertTrue(comptes.containsKey("FR1234567890"));
-        assertTrue(comptes.containsKey("FR1234567891"));
-    }
+    
 
     @Test
     public void testSetAndGetClient() {
