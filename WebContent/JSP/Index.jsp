@@ -10,6 +10,9 @@
 	}
 </script>
 <link rel="stylesheet" href="/_00_ASBank2023/style/style.css" />
+
+<!-- BUG NON-BLOQUANT : L'icône n'est pas affiché -->
+<!-- Solution : Changer le chemin de l'image ou ajouter un fichier favicon.ico dans le dossier WebContent/style -->
 <link href="/_00_ASBank2023/style/favicon.ico" rel="icon"
 	type="image/x-icon" />
 <head>
