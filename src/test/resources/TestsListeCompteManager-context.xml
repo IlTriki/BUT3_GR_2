@@ -2,10 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
         "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
-    <bean id="daoHibernate" class="com.iut.banque.dao.DaoHibernate" scope="singleton">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="packagesToScan" value="com.iut.banque.modele" />
@@ -29,9 +25,7 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
-    <bean id="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager">
-        <property name="dao" ref="daoHibernate" />
-    </bean>
+    <bean id="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager" />
 
     <bean id="client" class="com.iut.banque.modele.Client">
         <constructor-arg value="Test"/>
