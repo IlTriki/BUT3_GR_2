@@ -22,34 +22,40 @@
 	</p>
 	<p>Voici l'état de vos comptes :</p>
 	<table>
-		<tr>
-			<td><b>Numéro de compte</b></td>
-			<td><b>Type de compte</b></td>
-			<td><b>Solde actuel</b></td>
-		</tr>
-		<s:iterator value="accounts">
+		<thead>
 			<tr>
-				<td><s:url action="urlDetail" var="urlDetail">
-						<s:param name="compte"><s:property value="key" /></s:param> 
-						<%-- <s:param name="idCompte"><s:property value="key" /></s:param> --%>
-					</s:url> <s:a href="%{urlDetail}">
-						<s:property value="key" />
-					</s:a></td>
-				<s:if test="%{value.className == \"CompteAvecDecouvert\"}">
-					<td>Découvert possible</td>
-				</s:if>
-				<s:else>
-					<td>Simple</td>
-				</s:else>
-				<s:if test="%{value.solde >= 0}">
-					<td><s:property value="value.solde" /></td>
-				</s:if>
-				<s:else>
-					<td class="soldeNegatif"><s:property value="value.solde" /></td>
-				</s:else>
+				<th id="numCompte"><b>Numéro de compte</b></th>
+				<th id="typeCompte"><b>Type de compte</b></th>
+				<th id="soldeActuel"><b>Solde actuel</b></th>
 			</tr>
-		</s:iterator>
+		</thead>
+		<tbody>
+			<s:iterator value="accounts">
+				<tr>
+					<td>
+						<s:url action="urlDetail" var="urlDetail">
+							<s:param name="compte"><s:property value="key" /></s:param>
+						</s:url>
+						<s:a href="%{urlDetail}">
+							<s:property value="key" />
+						</s:a>
+					</td>
+					<td>
+						<s:if test="%{value.className == \"CompteAvecDecouvert\"}">
+							Découvert possible
+						</s:if>
+						<s:else>
+							Simple
+						</s:else>
+					</td>
+					<td class="<s:if test='%{value.solde < 0}'>soldeNegatif</s:if>">
+						<s:property value="value.solde" />
+					</td>
+				</tr>
+			</s:iterator>
+		</tbody>
 	</table>
+	
 </body>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>
