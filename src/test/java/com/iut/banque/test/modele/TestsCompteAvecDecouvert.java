@@ -34,10 +34,10 @@ public class TestsCompteAvecDecouvert {
 	}
 
 	@Test(expected = IllegalOperationException.class)
-	public void testSetDecouvertAutoriseMontantInferieurAuSoldeNegatif() throws IllegalFormatException, IllegalOperationException {
+	public void testSetDecouvertAutoriseMontantInferieurAuSoldeNegatif() throws IllegalFormatException, IllegalOperationException, InsufficientFundsException {
 		compte.debiter(150); // Solde devient -50
 		compte.setDecouverAutorise(40); // Devrait échouer car le solde est à -50
-}
+	}
 
 	/**
 	 * Test de la classe getClassName() pour les CompteAvecDecouvert
