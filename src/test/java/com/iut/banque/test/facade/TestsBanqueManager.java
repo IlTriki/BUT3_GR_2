@@ -192,5 +192,4 @@ public class TestsBanqueManager {
 		compte.debiter(150); // Solde devient -50
 		bm.changeDecouvert(compte, 40); // Devrait échouer car le solde est à -50
 	}
-
 }
