@@ -478,9 +478,8 @@ public class TestsDaoHibernate {
 			daoHibernate.updateAccount(compte);
 			fail("Une exception aurait dû être levée");
 		} catch (Exception e) {
-			// Test réussi - une exception est levée pour un compte inexistant
-			assertTrue(e instanceof org.hibernate.exception.GenericJDBCException 
-					|| e instanceof org.hibernate.ObjectNotFoundException);
+			assertTrue(e instanceof org.hibernate.ObjectNotFoundException 
+					|| e instanceof org.hibernate.exception.GenericJDBCException);
 		}
 	}
 
@@ -491,9 +490,8 @@ public class TestsDaoHibernate {
 			daoHibernate.updateUser(client);
 			fail("Une exception aurait dû être levée");
 		} catch (Exception e) {
-			// Test réussi - une exception est levée pour un utilisateur inexistant
-			assertTrue(e instanceof org.hibernate.exception.GenericJDBCException 
-					|| e instanceof org.hibernate.ObjectNotFoundException);
+			assertTrue(e instanceof org.hibernate.ObjectNotFoundException 
+					|| e instanceof org.hibernate.exception.GenericJDBCException);
 		}
 	}
 }
