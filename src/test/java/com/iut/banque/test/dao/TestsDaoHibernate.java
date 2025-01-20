@@ -470,4 +470,30 @@ public class TestsDaoHibernate {
 			fail("Mauvais type d'exception : attendu TechnicalException, reçu " + e.getClass().getSimpleName());
 		}
 	}
+
+	@Test
+	public void testUpdateAccountWithInexistentAccount() {
+		try {
+			Compte compte = new CompteSansDecouvert("INEXISTANT", 0, null);
+			daoHibernate.updateAccount(compte);
+			fail("Une exception aurait dû être levée");
+		} catch (Exception e) {
+			// Test réussi - une exception est levée pour un compte inexistant
+			assertTrue(e instanceof org.hibernate.exception.GenericJDBCException 
+					|| e instanceof org.hibernate.ObjectNotFoundException);
+		}
+	}
+
+	@Test
+	public void testUpdateUserWithInexistentUser() {
+		try {
+			Client client = new Client("TEST", "TEST", "TEST", true, "nonexistent", "pass", "12345");
+			daoHibernate.updateUser(client);
+			fail("Une exception aurait dû être levée");
+		} catch (Exception e) {
+			// Test réussi - une exception est levée pour un utilisateur inexistant
+			assertTrue(e instanceof org.hibernate.exception.GenericJDBCException 
+					|| e instanceof org.hibernate.ObjectNotFoundException);
+		}
+	}
 }
