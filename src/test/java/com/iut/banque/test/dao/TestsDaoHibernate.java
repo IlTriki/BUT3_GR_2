@@ -1,6 +1,7 @@
 package com.iut.banque.test.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -376,8 +377,56 @@ public class TestsDaoHibernate {
 		}
 	}
 
-	// TODO À implémenter lorsque disconnect() le sera
-	/*
-	 * @Test public void testDisconnect() { fail("Not yet implemented"); }
-	 */
+	@Test
+	public void testUpdateUserSuccess() {
+		try {
+			Utilisateur user = daoHibernate.getUserById("c.exist");
+			String oldAddress = user.getAdresse();
+			user.setAdresse("Nouvelle adresse");
+			
+			daoHibernate.updateUser(user);
+			
+			Utilisateur userModifie = daoHibernate.getUserById("c.exist");
+			assertEquals("Nouvelle adresse", userModifie.getAdresse());
+			
+			// Remettre l'ancienne adresse
+			user.setAdresse(oldAddress);
+			daoHibernate.updateUser(user);
+		} catch (Exception e) {
+			fail("L'update de l'utilisateur aurait dû réussir : " + e.getMessage());
+		}
+	}
+
+	@Test
+	public void testUpdateUserWithNullUser() {
+		try {
+			daoHibernate.updateUser(null);
+			fail("Une TechnicalException aurait dû être levée avec un utilisateur null");
+		} catch (TechnicalException e) {
+			assertEquals("Cet utilisateur n'existe plus", e.getMessage());
+		} catch (Exception e) {
+			fail("Mauvais type d'exception : attendu TechnicalException, reçu " + e.getClass().getSimpleName());
+		}
+	}
+
+	@Test
+	public void testIsUserAllowedWithException() {
+		try {
+			// Forcer une exception en passant un ID invalide
+			boolean result = daoHibernate.isUserAllowed("' OR '1'='1", "password");
+			assertFalse(result);
+		} catch (Exception e) {
+			fail("L'exception aurait dû être gérée en interne");
+		}
+	}
+
+	@Test
+	public void testDisconnect() {
+		try {
+			daoHibernate.disconnect();
+			// Vérifier que la déconnexion ne lève pas d'exception
+		} catch (Exception e) {
+			fail("La déconnexion ne devrait pas lever d'exception");
+		}
+	}
 }
