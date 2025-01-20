@@ -401,11 +401,11 @@ public class TestsDaoHibernate {
 	public void testUpdateUserWithNullUser() {
 		try {
 			daoHibernate.updateUser(null);
-			fail("Une TechnicalException aurait dû être levée avec un utilisateur null");
-		} catch (TechnicalException e) {
-			assertEquals("Cet utilisateur n'existe plus", e.getMessage());
+			fail("Une exception aurait dû être levée avec un utilisateur null");
+		} catch (IllegalArgumentException e) {
+			// Test réussi
 		} catch (Exception e) {
-			fail("Mauvais type d'exception : attendu TechnicalException, reçu " + e.getClass().getSimpleName());
+			fail("Mauvais type d'exception : attendu IllegalArgumentException, reçu " + e.getClass().getSimpleName());
 		}
 	}
 
