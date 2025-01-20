@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.facade.BanqueManager;
-import com.iut.banque.model.CompteAvecDecouvert;
-import com.iut.banque.model.Client;
-import com.iut.banque.model.InsufficientFundsException;
-import com.iut.banque.model.IllegalFormatException;
-
+import com.iut.banque.modele.CompteAvecDecouvert;
+import com.iut.banque.modele.Client;
+import com.iut.banque.exceptions.InsufficientFundsException;
+import com.iut.banque.exceptions.IllegalFormatException;
+import com.iut.banque.exceptions.IllegalOperationException;
 //@RunWith indique à JUnit de prendre le class runner de Spirng
 @RunWith(SpringJUnit4ClassRunner.class)
 // @ContextConfiguration permet de charger le context utilisé pendant les tests.
