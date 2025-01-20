@@ -477,9 +477,10 @@ public class TestsDaoHibernate {
 			Compte compte = new CompteSansDecouvert("INEXISTANT", 0, null);
 			daoHibernate.updateAccount(compte);
 			fail("Une exception aurait dû être levée");
+		} catch (IllegalArgumentException e) {
+			// Test réussi
 		} catch (Exception e) {
-			assertTrue(e instanceof org.hibernate.ObjectNotFoundException 
-					|| e instanceof org.hibernate.exception.GenericJDBCException);
+			fail("Mauvais type d'exception : attendu IllegalArgumentException, reçu " + e.getClass().getSimpleName());
 		}
 	}
 
@@ -489,9 +490,10 @@ public class TestsDaoHibernate {
 			Client client = new Client("TEST", "TEST", "TEST", true, "nonexistent", "pass", "12345");
 			daoHibernate.updateUser(client);
 			fail("Une exception aurait dû être levée");
+		} catch (IllegalArgumentException e) {
+			// Test réussi
 		} catch (Exception e) {
-			assertTrue(e instanceof org.hibernate.ObjectNotFoundException 
-					|| e instanceof org.hibernate.exception.GenericJDBCException);
+			fail("Mauvais type d'exception : attendu IllegalArgumentException, reçu " + e.getClass().getSimpleName());
 		}
 	}
 }
