@@ -530,18 +530,4 @@ public class TestsDaoHibernate {
 		compte.crediter(1000000);
 		assertEquals(1000100, compte.getSolde(), 0.001);
 	}
-
-	@Test
-	public void testChangeDecouvertSuccess() throws IllegalFormatException, IllegalOperationException {
-		CompteAvecDecouvert compte = (CompteAvecDecouvert) daoHibernate.getAccountById("CADV000000");
-		double nouveauDecouvert = 200.0;
-		daoHibernate.changeDecouvert(compte, nouveauDecouvert);
-		assertEquals(nouveauDecouvert, compte.getDecouvertAutorise(), 0.001);
-	}
-
-	@Test(expected = IllegalFormatException.class)
-	public void testChangeDecouvertNegative() throws IllegalFormatException, IllegalOperationException {
-		CompteAvecDecouvert compte = (CompteAvecDecouvert) daoHibernate.getAccountById("CADV000000");
-		daoHibernate.changeDecouvert(compte, -100.0);
-	}
 }

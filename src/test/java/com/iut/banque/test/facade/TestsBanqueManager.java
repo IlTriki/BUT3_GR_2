@@ -1,5 +1,6 @@
 package com.iut.banque.test.facade;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -11,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.facade.BanqueManager;
+import com.iut.banque.model.CompteAvecDecouvert;
+import com.iut.banque.model.Client;
+import com.iut.banque.model.InsufficientFundsException;
+import com.iut.banque.model.IllegalFormatException;
 
 //@RunWith indique à JUnit de prendre le class runner de Spirng
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -165,6 +170,27 @@ public class TestsBanqueManager {
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
+	}
+
+	@Test
+	public void testChangeDecouvertSuccess() throws IllegalFormatException, IllegalOperationException {
+		CompteAvecDecouvert compte = new CompteAvecDecouvert("FR0123456789", 100, 100, new Client());
+		double nouveauDecouvert = 200.0;
+		bm.changeDecouvert(compte, nouveauDecouvert);
+		assertEquals(nouveauDecouvert, compte.getDecouvertAutorise(), 0.001);
+	}
+
+	@Test(expected = IllegalFormatException.class)
+	public void testChangeDecouvertNegative() throws IllegalFormatException, IllegalOperationException {
+		CompteAvecDecouvert compte = new CompteAvecDecouvert("FR0123456789", 100, 100, new Client());
+		bm.changeDecouvert(compte, -100.0);
+	}
+
+	@Test(expected = IllegalOperationException.class)
+	public void testChangeDecouvertIncompatibleAvecSolde() throws IllegalFormatException, IllegalOperationException, InsufficientFundsException {
+		CompteAvecDecouvert compte = new CompteAvecDecouvert("FR0123456789", 100, 100, new Client());
+		compte.debiter(150); // Solde devient -50
+		bm.changeDecouvert(compte, 40); // Devrait échouer car le solde est à -50
 	}
 
 }
