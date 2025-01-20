@@ -3,6 +3,8 @@ package com.iut.banque.controller;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.InsufficientFundsException;
@@ -12,6 +14,7 @@ import com.iut.banque.modele.Compte;
 import com.iut.banque.modele.Gestionnaire;
 import com.opensymphony.xwork2.ActionSupport;
 
+
 public class DetailCompte extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
@@ -19,6 +22,7 @@ public class DetailCompte extends ActionSupport {
 	private String montant;
 	private String error;
 	protected Compte compte;
+	private static final Logger logger = LoggerFactory.getLogger(DetailCompte.class);
 
 	/**
 	 * Constructeur du controlleur DetailCompte
@@ -127,15 +131,21 @@ public class DetailCompte extends ActionSupport {
 	public String debit() {
 		Compte compte = getCompte();
 		try {
-			banque.debiter(compte, Double.parseDouble(montant.trim()));
+			double montant = Double.parseDouble(this.montant);
+			logger.info("Tentative de débit de {} sur le compte {}", montant, compte.getNumeroCompte());
+			banque.debiter(compte, montant);
+			logger.info("Débit réussi");
 			return "SUCCESS";
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
+			logger.error("Erreur de format de montant");
 			return "ERROR";
 		} catch (InsufficientFundsException ife) {
+			logger.error("Fonds insuffisants");
 			ife.printStackTrace();
 			return "NOTENOUGHFUNDS";
 		} catch (IllegalFormatException e) {
+			logger.error("Montant négatif");
 			e.printStackTrace();
 			return "NEGATIVEAMOUNT";
 		}
