@@ -496,4 +496,52 @@ public class TestsDaoHibernate {
 			fail("Mauvais type d'exception : attendu IllegalArgumentException, reçu " + e.getClass().getSimpleName());
 		}
 	}
+
+	@Test
+	public void testSetDecouvertAutoriseValeurZero() throws IllegalFormatException, IllegalOperationException {
+		CompteAvecDecouvert compte = new CompteAvecDecouvert("FR0123456789", 100, 100, new Client());
+		compte.setDecouverAutorise(0);
+		assertEquals(0, compte.getDecouvertAutorise(), 0.001);
+	}
+
+	@Test
+	public void testGetComptesAvecSoldeNonNulAvecPlusieursComptes() throws IllegalFormatException, IllegalOperationException {
+		Client client = new Client("Test", "User", "Address", true, "t.user1", "password", "1234567890");
+		client.addAccount(new CompteSansDecouvert("FR1234567890", 100, client));
+		client.addAccount(new CompteSansDecouvert("FR1234567891", 0, client));
+		client.addAccount(new CompteAvecDecouvert("FR1234567892", 200, 100, client));
+		
+		Map<String, Compte> comptesNonNuls = client.getComptesAvecSoldeNonNul();
+		assertEquals(2, comptesNonNuls.size());
+		assertTrue(comptesNonNuls.containsKey("FR1234567890"));
+		assertTrue(comptesNonNuls.containsKey("FR1234567892"));
+	}
+
+	@Test
+	public void testCrediterMontantZero() throws IllegalFormatException {
+		CompteSansDecouvert compte = new CompteSansDecouvert("FR0123456789", 100, new Client());
+		compte.crediter(0);
+		assertEquals(100, compte.getSolde(), 0.001);
+	}
+
+	@Test
+	public void testCrediterGrandMontant() throws IllegalFormatException {
+		CompteSansDecouvert compte = new CompteSansDecouvert("FR0123456789", 100, new Client());
+		compte.crediter(1000000);
+		assertEquals(1000100, compte.getSolde(), 0.001);
+	}
+
+	@Test
+	public void testChangeDecouvertSuccess() throws IllegalFormatException, IllegalOperationException {
+		CompteAvecDecouvert compte = (CompteAvecDecouvert) daoHibernate.getAccountById("CADV000000");
+		double nouveauDecouvert = 200.0;
+		daoHibernate.changeDecouvert(compte, nouveauDecouvert);
+		assertEquals(nouveauDecouvert, compte.getDecouvertAutorise(), 0.001);
+	}
+
+	@Test(expected = IllegalFormatException.class)
+	public void testChangeDecouvertNegative() throws IllegalFormatException, IllegalOperationException {
+		CompteAvecDecouvert compte = (CompteAvecDecouvert) daoHibernate.getAccountById("CADV000000");
+		daoHibernate.changeDecouvert(compte, -100.0);
+	}
 }
