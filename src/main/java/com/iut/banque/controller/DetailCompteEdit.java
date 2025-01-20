@@ -44,6 +44,9 @@ public class DetailCompteEdit extends DetailCompte {
 		}
 		try {
 			Double decouvert = Double.parseDouble(decouvertAutorise);
+			if (decouvert < 0) {
+				return "NEGATIVEOVERDRAFT";
+			}
 			banque.changeDecouvert((CompteAvecDecouvert) getCompte(), decouvert);
 			return "SUCCESS";
 		} catch (NumberFormatException nfe) {
