@@ -429,4 +429,45 @@ public class TestsDaoHibernate {
 			fail("La déconnexion ne devrait pas lever d'exception");
 		}
 	}
+
+	@Test
+	public void testIsUserAllowedWithNullSession() {
+		try {
+			// Forcer une exception de session en utilisant une requête malformée
+			boolean result = daoHibernate.isUserAllowed("'; DROP TABLE users; --", "password");
+			assertFalse(result);
+			
+			// Vérifier que la session est bien fermée même en cas d'erreur
+			result = daoHibernate.isUserAllowed("c.exist", "TEST PASS");
+			assertTrue(result);
+		} catch (Exception e) {
+			fail("L'exception aurait dû être gérée en interne");
+		}
+	}
+
+	@Test
+	public void testUpdateAccountWithNullAccountTechnical() {
+		try {
+			Compte compte = new CompteSansDecouvert("TEST123", 0, null);
+			daoHibernate.updateAccount(compte);
+			fail("Une TechnicalException aurait dû être levée");
+		} catch (TechnicalException e) {
+			assertEquals("Ce compte n'existe plus", e.getMessage());
+		} catch (Exception e) {
+			fail("Mauvais type d'exception : attendu TechnicalException, reçu " + e.getClass().getSimpleName());
+		}
+	}
+
+	@Test
+	public void testUpdateUserWithNonExistentUser() {
+		try {
+			Client client = new Client("TEST", "TEST", "TEST", true, "nonexistent", "pass", "12345");
+			daoHibernate.updateUser(client);
+			fail("Une TechnicalException aurait dû être levée");
+		} catch (TechnicalException e) {
+			assertEquals("Cet utilisateur n'existe plus", e.getMessage());
+		} catch (Exception e) {
+			fail("Mauvais type d'exception : attendu TechnicalException, reçu " + e.getClass().getSimpleName());
+		}
+	}
 }
